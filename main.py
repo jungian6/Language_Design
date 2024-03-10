@@ -1,31 +1,11 @@
-#######################################
-# IMPORTS
-#######################################
-
-from StringsWithArrows import *
 from errors import *
-
 import string
 import os
 import math
 
-#######################################
-# CONSTANTS
-#######################################
-
 DIGITS = '0123456789'
 LETTERS = string.ascii_letters
 LETTERS_DIGITS = LETTERS + DIGITS
-
-
-#######################################
-# ERRORS
-#######################################
-
-
-#######################################
-# POSITION
-#######################################
 
 class Position:
     def __init__(self, idx, ln, col, fn, ftxt):
