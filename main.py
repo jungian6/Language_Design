@@ -1,11 +1,82 @@
-from errors import *
+#######################################
+# IMPORTS
+#######################################
+
+from StringsWithArrows import *
+
 import string
 import os
 import math
 
+#######################################
+# CONSTANTS
+#######################################
+
 DIGITS = '0123456789'
 LETTERS = string.ascii_letters
 LETTERS_DIGITS = LETTERS + DIGITS
+
+
+#######################################
+# ERRORS
+#######################################
+
+class Error:
+    def __init__(self, pos_start, pos_end, error_name, details):
+        self.pos_start = pos_start
+        self.pos_end = pos_end
+        self.error_name = error_name
+        self.details = details
+
+    def as_string(self):
+        result = f'{self.error_name}: {self.details}\n'
+        result += f'File {self.pos_start.fn}, line {self.pos_start.ln + 1}'
+        result += '\n\n' + string_with_arrows(self.pos_start.ftxt, self.pos_start, self.pos_end)
+        return result
+
+
+class IllegalCharError(Error):
+    def __init__(self, pos_start, pos_end, details):
+        super().__init__(pos_start, pos_end, 'Illegal Character', details)
+
+
+class ExpectedCharError(Error):
+    def __init__(self, pos_start, pos_end, details):
+        super().__init__(pos_start, pos_end, 'Expected Character', details)
+
+
+class InvalidSyntaxError(Error):
+    def __init__(self, pos_start, pos_end, details=''):
+        super().__init__(pos_start, pos_end, 'Invalid Syntax', details)
+
+
+class RTError(Error):
+    def __init__(self, pos_start, pos_end, details, context):
+        super().__init__(pos_start, pos_end, 'Runtime Error', details)
+        self.context = context
+
+    def as_string(self):
+        result = self.generate_traceback()
+        result += f'{self.error_name}: {self.details}'
+        result += '\n\n' + string_with_arrows(self.pos_start.ftxt, self.pos_start, self.pos_end)
+        return result
+
+    def generate_traceback(self):
+        result = ''
+        pos = self.pos_start
+        ctx = self.context
+
+        while ctx:
+            result = f'  File {pos.fn}, line {str(pos.ln + 1)}, in {ctx.display_name}\n' + result
+            pos = ctx.parent_entry_pos
+            ctx = ctx.parent
+
+        return 'Traceback (most recent call last):\n' + result
+
+
+#######################################
+# POSITION
+#######################################
 
 class Position:
     def __init__(self, idx, ln, col, fn, ftxt):
@@ -123,12 +194,11 @@ class Lexer:
         while self.current_char != None:
             if self.current_char in ' \t':
                 self.advance()
+            elif self.current_char == '#':
+                self.skip_comment()
             elif self.current_char in ';\n':
                 tokens.append(Token(TT_NEWLINE, pos_start=self.pos))
                 self.advance()
-
-            elif self.current_char == '#':
-                self.skip_comment()
             elif self.current_char in DIGITS:
                 tokens.append(self.make_number())
             elif self.current_char in LETTERS:
@@ -182,13 +252,6 @@ class Lexer:
 
         tokens.append(Token(TT_EOF, pos_start=self.pos))
         return tokens, None
-
-    def skip_comment(self):
-        self.advance()
-
-        while self.current_char != '\n':
-            self.advance()
-        self.advance()
 
     def make_number(self):
         num_str = ''
@@ -297,6 +360,14 @@ class Lexer:
             tok_type = TT_GTE
 
         return Token(tok_type, pos_start=pos_start, pos_end=self.pos)
+
+    def skip_comment(self):
+        self.advance()
+
+        while self.current_char != '\n':
+            self.advance()
+
+        self.advance()
 
 
 #######################################
@@ -1464,19 +1535,21 @@ class String(Value):
         if isinstance(other, String):
             return String(self.value + other.value).set_context(self.context), None
         else:
-            return None, self.illegal_operation(other)
+            return None, Value.illegal_operation(self, other)
 
+    # Equality
     def get_comparison_eq(self, other):
         if isinstance(other, String):
             return Number(int(self.value == other.value)).set_context(self.context), None
         else:
-            return None, self.illegal_operation(other)
+            return None, Value.illegal_operation(self, other)
 
+    # Inequality
     def get_comparison_ne(self, other):
         if isinstance(other, String):
             return Number(int(self.value != other.value)).set_context(self.context), None
         else:
-            return None, self.illegal_operation(other)
+            return None, Value.illegal_operation(self, other)
 
     def multed_by(self, other):
         if isinstance(other, Number):
@@ -1806,8 +1879,11 @@ class BuiltInFunction(BaseFunction):
 
         return RTResult().success(Number(len(list_.elements)))
 
+    execute_len.arg_names = ["list"]
+
     def execute_run(self, exec_ctx):
         fn = exec_ctx.symbol_table.get("fn")
+
         if not isinstance(fn, String):
             return RTResult().failure(RTError(
                 self.pos_start, self.pos_end,
@@ -1832,9 +1908,11 @@ class BuiltInFunction(BaseFunction):
         if error:
             return RTResult().failure(RTError(
                 self.pos_start, self.pos_end,
-                f"Failed to finish executing script \"{fn}\"\n" + error.as_string(),
+                f"Failed to finish executing script \"{fn}\"\n" +
+                error.as_string(),
                 exec_ctx
             ))
+
         return RTResult().success(Number.null)
 
     execute_run.arg_names = ["fn"]
