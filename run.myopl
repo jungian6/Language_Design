@@ -33,3 +33,15 @@ PRINT("Greetings universe!")
 FOR i = 0 TO 5 THEN
 	PRINT(join(map(["l", "sp"], oopify), ", "))
 END
+
+VAR x = TRUE
+VAR y = FALSE
+
+IF x THEN
+    PRINT("x is true")
+    IF y == FALSE THEN
+        PRINT("y is false")
+    END
+ELSE
+    PRINT("x is false")
+END
