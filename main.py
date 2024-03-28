@@ -2,6 +2,7 @@ import string
 import os
 import math
 from errors import *
+from nodes import *
 
 DIGITS = '0123456789'
 LETTERS = string.ascii_letters
@@ -29,10 +30,6 @@ class Position:
     def copy(self):
         return Position(self.idx, self.ln, self.col, self.fn, self.ftxt)
 
-
-#######################################
-# TOKENS
-#######################################
 
 TT_INT = 'INT'
 TT_FLOAT = 'FLOAT'
@@ -102,10 +99,6 @@ class Token:
             return f'{self.type}:{self.value}'
         return f'{self.type}'
 
-
-#######################################
-# LEXER
-#######################################
 
 class Lexer:
     def __init__(self, fn, text):
@@ -302,206 +295,6 @@ class Lexer:
 
         self.advance()
 
-
-#######################################
-# NODES
-#######################################
-
-class NumberNode:
-    def __init__(self, tok):
-        self.tok = tok
-
-        self.pos_start = self.tok.pos_start
-        self.pos_end = self.tok.pos_end
-
-    def __repr__(self):
-        return f'{self.tok}'
-
-
-class StringNode:
-    def __init__(self, tok):
-        self.tok = tok
-
-        self.pos_start = self.tok.pos_start
-        self.pos_end = self.tok.pos_end
-
-    def __repr__(self):
-        return f'{self.tok}'
-
-
-class ListNode:
-    def __init__(self, element_nodes, pos_start, pos_end):
-        self.element_nodes = element_nodes
-
-        self.pos_start = pos_start
-        self.pos_end = pos_end
-
-
-class VarAccessNode:
-    def __init__(self, var_name_tok):
-        self.var_name_tok = var_name_tok
-
-        self.pos_start = self.var_name_tok.pos_start
-        self.pos_end = self.var_name_tok.pos_end
-
-
-class VarAssignNode:
-    def __init__(self, var_name_tok, value_node):
-        self.var_name_tok = var_name_tok
-        self.value_node = value_node
-
-        self.pos_start = self.var_name_tok.pos_start
-        self.pos_end = self.value_node.pos_end
-
-
-class BinOpNode:
-    def __init__(self, left_node, op_tok, right_node):
-        self.left_node = left_node
-        self.op_tok = op_tok
-        self.right_node = right_node
-
-        self.pos_start = self.left_node.pos_start
-        self.pos_end = self.right_node.pos_end
-
-    def __repr__(self):
-        return f'({self.left_node}, {self.op_tok}, {self.right_node})'
-
-
-class UnaryOpNode:
-    def __init__(self, op_tok, node):
-        self.op_tok = op_tok
-        self.node = node
-
-        self.pos_start = self.op_tok.pos_start
-        self.pos_end = node.pos_end
-
-    def __repr__(self):
-        return f'({self.op_tok}, {self.node})'
-
-
-class IfNode:
-    def __init__(self, cases, else_case):
-        self.cases = cases
-        self.else_case = else_case
-
-        self.pos_start = self.cases[0][0].pos_start
-        self.pos_end = (self.else_case or self.cases[len(self.cases) - 1])[0].pos_end
-
-
-class ForNode:
-    def __init__(self, var_name_tok, start_value_node, end_value_node, step_value_node, body_node, should_return_null):
-        self.var_name_tok = var_name_tok
-        self.start_value_node = start_value_node
-        self.end_value_node = end_value_node
-        self.step_value_node = step_value_node
-        self.body_node = body_node
-        self.should_return_null = should_return_null
-
-        self.pos_start = self.var_name_tok.pos_start
-        self.pos_end = self.body_node.pos_end
-
-
-class WhileNode:
-    def __init__(self, condition_node, body_node, should_return_null):
-        self.condition_node = condition_node
-        self.body_node = body_node
-        self.should_return_null = should_return_null
-
-        self.pos_start = self.condition_node.pos_start
-        self.pos_end = self.body_node.pos_end
-
-
-class FuncDefNode:
-    def __init__(self, var_name_tok, arg_name_toks, body_node, should_auto_return):
-        self.var_name_tok = var_name_tok
-        self.arg_name_toks = arg_name_toks
-        self.body_node = body_node
-        self.should_auto_return = should_auto_return
-
-        if self.var_name_tok:
-            self.pos_start = self.var_name_tok.pos_start
-        elif len(self.arg_name_toks) > 0:
-            self.pos_start = self.arg_name_toks[0].pos_start
-        else:
-            self.pos_start = self.body_node.pos_start
-
-        self.pos_end = self.body_node.pos_end
-
-
-class CallNode:
-    def __init__(self, node_to_call, arg_nodes):
-        self.node_to_call = node_to_call
-        self.arg_nodes = arg_nodes
-
-        self.pos_start = self.node_to_call.pos_start
-
-        if len(self.arg_nodes) > 0:
-            self.pos_end = self.arg_nodes[len(self.arg_nodes) - 1].pos_end
-        else:
-            self.pos_end = self.node_to_call.pos_end
-
-
-class ReturnNode:
-    def __init__(self, node_to_return, pos_start, pos_end):
-        self.node_to_return = node_to_return
-
-        self.pos_start = pos_start
-        self.pos_end = pos_end
-
-
-class ContinueNode:
-    def __init__(self, pos_start, pos_end):
-        self.pos_start = pos_start
-        self.pos_end = pos_end
-
-
-class BreakNode:
-    def __init__(self, pos_start, pos_end):
-        self.pos_start = pos_start
-        self.pos_end = pos_end
-
-
-#######################################
-# PARSE RESULT
-#######################################
-
-class ParseResult:
-    def __init__(self):
-        self.error = None
-        self.node = None
-        self.last_registered_advance_count = 0
-        self.advance_count = 0
-        self.to_reverse_count = 0
-
-    def register_advancement(self):
-        self.last_registered_advance_count = 1
-        self.advance_count += 1
-
-    def register(self, res):
-        self.last_registered_advance_count = res.advance_count
-        self.advance_count += res.advance_count
-        if res.error: self.error = res.error
-        return res.node
-
-    def try_register(self, res):
-        if res.error:
-            self.to_reverse_count = res.advance_count
-            return None
-        return self.register(res)
-
-    def success(self, node):
-        self.node = node
-        return self
-
-    def failure(self, error):
-        if not self.error or self.last_registered_advance_count == 0:
-            self.error = error
-        return self
-
-
-#######################################
-# PARSER
-#######################################
 
 class Parser:
     def __init__(self, tokens):
@@ -1294,10 +1087,6 @@ class RTResult:
         )
 
 
-#######################################
-# VALUES
-#######################################
-
 class Value:
     def __init__(self):
         self.set_pos()
@@ -1326,7 +1115,7 @@ class Value:
     def dived_by(self, other):
         return None, self.illegal_operation(other)
 
-    def powed_by(self, other):
+    def power_by(self, other):
         return None, self.illegal_operation(other)
 
     def get_comparison_eq(self, other):
@@ -1410,7 +1199,7 @@ class Number(Value):
         else:
             return None, Value.illegal_operation(self, other)
 
-    def powed_by(self, other):
+    def power_by(self, other):
         if isinstance(other, Number):
             return Number(self.value ** other.value).set_context(self.context), None
         else:
@@ -1906,22 +1695,12 @@ BuiltInFunction.extend = BuiltInFunction("extend")
 BuiltInFunction.len = BuiltInFunction("len")
 BuiltInFunction.run = BuiltInFunction("run")
 
-
-#######################################
-# CONTEXT
-#######################################
-
 class Context:
     def __init__(self, display_name, parent=None, parent_entry_pos=None):
         self.display_name = display_name
         self.parent = parent
         self.parent_entry_pos = parent_entry_pos
         self.symbol_table = None
-
-
-#######################################
-# SYMBOL TABLE
-#######################################
 
 class SymbolTable:
     def __init__(self, parent=None):
@@ -2016,7 +1795,7 @@ class Interpreter:
         elif node.op_tok.type == TT_DIV:
             result, error = left.dived_by(right)
         elif node.op_tok.type == TT_POW:
-            result, error = left.powed_by(right)
+            result, error = left.power_by(right)
         elif node.op_tok.type == TT_EE:
             result, error = left.get_comparison_eq(right)
         elif node.op_tok.type == TT_NE:
@@ -2202,10 +1981,6 @@ class Interpreter:
     def visit_BreakNode(self, node, context):
         return RTResult().success_break()
 
-
-#######################################
-# RUN
-#######################################
 
 global_symbol_table = SymbolTable()
 global_symbol_table.set("NULL", Number.null)
