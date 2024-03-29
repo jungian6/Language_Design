@@ -37,6 +37,12 @@ END
 VAR x = TRUE
 VAR y = FALSE
 
+VAR z = "Hello, world!"
+
+IF IS_STR(z) THEN
+    PRINT("z is a string")
+END
+
 IF x THEN
     PRINT("x is true")
     IF y == FALSE THEN

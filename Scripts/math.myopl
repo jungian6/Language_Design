@@ -1,0 +1,9 @@
+# Input a radius from the user
+VAR radius = INPUT_INT("Enter the radius of the circle: ");
+
+# Calculates the circumference of a circle
+FUN calculateCircumference(radius) -> 2 * MATH_PI * radius;
+
+VAR circumference = calculateCircumference(radius);
+
+PRINT("Circumference of circle with radius " + radius + ": " + circumference);

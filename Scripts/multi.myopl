@@ -1,0 +1,14 @@
+VAR start = INPUT_INT("Enter the start number for the multiplication table: ");
+VAR end = INPUT_INT("Enter the end number for the multiplication table: ");
+VAR i = start;
+
+WHILE i <= end THEN
+    VAR j = 1;
+    PRINT("Multiplication table for: " + i);
+    WHILE j <= 10 THEN
+        PRINT(" " + i + " x " + j + " = " + i * j);
+        VAR j = j + 1;
+    END
+    PRINT("----------");
+    VAR i = i + 1;
+END

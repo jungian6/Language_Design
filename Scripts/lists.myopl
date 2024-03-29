@@ -1,0 +1,14 @@
+# Create two lists
+VAR listOne = [1, 2, 3];
+VAR listTwo = [4, 5, 6];
+
+PRINT("List One: " + listOne);
+PRINT("List Two: " + listTwo);
+
+# Combine lists
+VAR combinedList = [];
+EXTEND(combinedList, listOne);
+EXTEND(combinedList, listTwo);
+
+# Display the combined list
+PRINT("Combined List: " + combinedList);

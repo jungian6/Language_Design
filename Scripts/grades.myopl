@@ -1,0 +1,24 @@
+VAR grade = INPUT_INT("Enter your grade: ");
+VAR extraCredit = INPUT_INT("Enter your extra credit: ");
+
+IF grade >= 90 THEN
+    IF extraCredit > 5 THEN
+        PRINT("Outstanding performance with extra credit!");
+    ELSE
+        PRINT("Excellent performance!");
+    END
+ELSE IF grade >= 80 THEN
+    IF extraCredit > 3 THEN
+        PRINT("Very good performance with some extra effort!");
+    ELSE
+        PRINT("Good performance!");
+    END
+ELSE IF grade >= 70 THEN
+    PRINT("Average performance.");
+ELSE
+    IF extraCredit > 5 THEN
+        PRINT("Passed because of extra credit!");
+    ELSE
+        PRINT("Needs improvement.");
+    END
+END

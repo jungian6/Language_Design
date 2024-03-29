@@ -1284,9 +1284,13 @@ class String(Value):
         self.value = value
 
     def added_to(self, other):
-        """Concatenate two strings together"""
         if isinstance(other, String):
             return String(self.value + other.value).set_context(self.context), None
+        elif isinstance(other, Number):
+            return String(self.value + str(other.value)).set_context(self.context), None
+        elif isinstance(other, List):
+            list_str = ", ".join([str(element) for element in other.elements])
+            return String(self.value + "[" + list_str + "]").set_context(self.context), None
         else:
             return None, Value.illegal_operation(self, other)
 
@@ -1513,22 +1517,51 @@ class BuiltInFunction(BaseFunction):
     execute_print_ret.arg_names = ['value']
 
     def execute_input(self, exec_ctx):
-        text = input()
+        text = ''
+        # Check if a prompt argument is provided
+        if "prompt" in exec_ctx.symbol_table.symbols:
+            prompt = exec_ctx.symbol_table.get("prompt")
+            if isinstance(prompt, String):
+                text = input(prompt.value)  # Use the provided prompt
+            else:
+                return RTResult().failure(RTError(
+                    self.pos_start, self.pos_end,
+                    "Prompt argument must be a string",
+                    exec_ctx
+                ))
+        else:
+            text = input()  # No prompt provided
         return RTResult().success(String(text))
 
-    execute_input.arg_names = []
+    execute_input.arg_names = ["prompt"]
 
     def execute_input_int(self, exec_ctx):
+        text = ''
+        # Check if a prompt argument is provided
+        if "prompt" in exec_ctx.symbol_table.symbols:
+            prompt = exec_ctx.symbol_table.get("prompt")
+            if isinstance(prompt, String):
+                prompt_value = prompt.value  # Use the provided prompt
+            else:
+                return RTResult().failure(RTError(
+                    self.pos_start, self.pos_end,
+                    "Prompt argument must be a string",
+                    exec_ctx
+                ))
+        else:
+            prompt_value = ""  # No prompt provided, use an empty string as default
+
         while True:
-            text = input()
+            text = input(prompt_value)  # Display the prompt to the user
             try:
                 number = int(text)
                 break
             except ValueError:
-                print(f"'{text}' must be an integer. Try again!")
+                print(f"Error: '{text}' must be an integer. Try again!")
+
         return RTResult().success(Number(number))
 
-    execute_input_int.arg_names = []
+    execute_input_int.arg_names = ["prompt"]
 
     def execute_clear(self, exec_ctx):
         os.system('cls' if os.name == 'nt' else 'cls')
