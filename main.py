@@ -1022,11 +1022,6 @@ class Parser:
 
         return res.success(left)
 
-
-#######################################
-# RUNTIME RESULT
-#######################################
-
 class RTResult:
     def __init__(self):
         self.reset()
@@ -1272,7 +1267,7 @@ class Number(Value):
         return str(self.value)
 
 
-Number.null = Number(0)
+Number.null = Number("-------")
 Number.false = Number(0)
 Number.true = Number(1)
 Number.math_PI = Number(math.pi)
