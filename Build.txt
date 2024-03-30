@@ -1,0 +1,4 @@
+HOW TO BUILD THE PROJECT:
+
+1. Install PyCharm IDE on your machine.
+2. Make sure you have Python 3.11 installed on your machine.

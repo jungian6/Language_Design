@@ -1,8 +1,0 @@
-PRINT("5. TRUE == FALSE: " + (TRUE == FALSE));
-PRINT("6. TRUE != FALSE: " + (TRUE != FALSE));
-PRINT("7. (5 < 10): " + (5 < 10));
-PRINT("8. NOT(5 - 4 > 3 * 2 == NOT FALSE): " + (NOT(5 - 4 > 3 * 2 == TRUE)));
-PRINT("9. TRUE AND TRUE: " + (TRUE AND TRUE));
-PRINT("10. FALSE AND TRUE: " + (FALSE AND TRUE));
-PRINT("11. (0 < 1) OR FALSE: " + ((0 < 1) OR FALSE));
-PRINT("12. FALSE OR FALSE: " + (FALSE OR FALSE));

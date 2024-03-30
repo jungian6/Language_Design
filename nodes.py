@@ -1,4 +1,5 @@
 class NumberNode:
+    """NumberNode class is used to represent a number in the AST"""
     def __init__(self, tok):
         self.tok = tok
 
@@ -10,6 +11,7 @@ class NumberNode:
 
 
 class StringNode:
+    """StringNode class is used to represent a string in the AST"""
     def __init__(self, tok):
         self.tok = tok
 
@@ -21,6 +23,7 @@ class StringNode:
 
 
 class ListNode:
+    """ListNode class is used to represent a list in the AST"""
     def __init__(self, element_nodes, pos_start, pos_end):
         self.element_nodes = element_nodes
 
@@ -29,6 +32,7 @@ class ListNode:
 
 
 class VarAccessNode:
+    """VarAccessNode class is used to represent a variable access in the AST"""
     def __init__(self, var_name_tok):
         self.var_name_tok = var_name_tok
 
@@ -150,11 +154,6 @@ class BreakNode:
     def __init__(self, pos_start, pos_end):
         self.pos_start = pos_start
         self.pos_end = pos_end
-
-
-#######################################
-# PARSE RESULT
-#######################################
 
 class ParseResult:
     def __init__(self):
