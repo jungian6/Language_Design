@@ -3,6 +3,7 @@ import os
 import math
 from errors import *
 from nodes import *
+from symbol_table import SymbolTable
 
 DIGITS = '0123456789'
 LETTERS = string.ascii_letters
@@ -526,7 +527,8 @@ class Parser:
                     self.advance()
 
                     arg_nodes.append(res.register(self.expr()))
-                    if res.error: return res
+                    if res.error:
+                        return res
 
                 if self.current_tok.type != TT_RPAREN:
                     return res.failure(InvalidSyntaxError(
@@ -865,7 +867,8 @@ class Parser:
             return res.success(ForNode(var_name, start_value, end_value, step_value, body, True))
 
         body = res.register(self.statement())
-        if res.error: return res
+        if res.error:
+            return res
 
         return res.success(ForNode(var_name, start_value, end_value, step_value, body, False))
 
@@ -1113,6 +1116,7 @@ class RTResult:
 
 class Value:
     """Value Class"""
+
     def __init__(self):
         self.set_pos()
         self.set_context()
@@ -1180,7 +1184,8 @@ class Value:
         return False
 
     def illegal_operation(self, other=None):
-        if not other: other = self
+        if not other:
+            other = self
         return RTError(
             self.pos_start, other.pos_end,
             'Illegal operation',
@@ -1190,6 +1195,7 @@ class Value:
 
 class Number(Value):
     """Number Class"""
+
     def __init__(self, value):
         super().__init__()
         self.value = value
@@ -1354,6 +1360,7 @@ Number.math_PI = Number(math.pi)
 
 class String(Value):
     """String Class"""
+
     def __init__(self, value):
         super().__init__()
         self.value = value
@@ -1412,6 +1419,7 @@ class String(Value):
 
 class List(Value):
     """List of elements"""
+
     def __init__(self, elements):
         super().__init__()
         self.elements = elements
@@ -1473,6 +1481,7 @@ class List(Value):
 
 class BaseFunction(Value):
     """Base class for all functions"""
+
     def __init__(self, name):
         super().__init__()
         self.name = name or "<anonymous>"
@@ -1519,6 +1528,7 @@ class BaseFunction(Value):
 
 class Function(BaseFunction):
     """User-defined functions"""
+
     def __init__(self, name, body_node, arg_names, should_auto_return):
         super().__init__(name)
         self.body_node = body_node
@@ -1553,6 +1563,7 @@ class Function(BaseFunction):
 
 class BuiltInFunction(BaseFunction):
     """Built-in functions"""
+
     def __init__(self, name):
         super().__init__(name)
 
@@ -1814,24 +1825,6 @@ class Context:
         self.parent = parent
         self.parent_entry_pos = parent_entry_pos
         self.symbol_table = None
-
-
-class SymbolTable:
-    def __init__(self, parent=None):
-        self.symbols = {}
-        self.parent = parent
-
-    def get(self, name):
-        value = self.symbols.get(name, None)
-        if value is None and self.parent:
-            return self.parent.get(name)
-        return value
-
-    def set(self, name, value):
-        self.symbols[name] = value
-
-    def remove(self, name):
-        del self.symbols[name]
 
 
 class Interpreter:
