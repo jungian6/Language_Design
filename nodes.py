@@ -41,6 +41,7 @@ class VarAccessNode:
 
 
 class VarAssignNode:
+    """VarAssignNode class is used to represent a variable assignment in the AST"""
     def __init__(self, var_name_tok, value_node):
         self.var_name_tok = var_name_tok
         self.value_node = value_node
@@ -50,6 +51,7 @@ class VarAssignNode:
 
 
 class BinOpNode:
+    """BinOpNode class is used to represent a binary operation in the AST"""
     def __init__(self, left_node, op_tok, right_node):
         self.left_node = left_node
         self.op_tok = op_tok
@@ -63,6 +65,7 @@ class BinOpNode:
 
 
 class UnaryOpNode:
+    """UnaryOpNode class is used to represent a unary operation in the AST"""
     def __init__(self, op_tok, node):
         self.op_tok = op_tok
         self.node = node
@@ -75,6 +78,7 @@ class UnaryOpNode:
 
 
 class IfNode:
+    """IfNode class is used to represent an if statement in the AST"""
     def __init__(self, cases, else_case):
         self.cases = cases
         self.else_case = else_case
@@ -84,6 +88,7 @@ class IfNode:
 
 
 class ForNode:
+    """ForNode class is used to represent a for loop in the AST"""
     def __init__(self, var_name_tok, start_value_node, end_value_node, step_value_node, body_node, should_return_null):
         self.var_name_tok = var_name_tok
         self.start_value_node = start_value_node
@@ -97,6 +102,7 @@ class ForNode:
 
 
 class WhileNode:
+    """WhileNode class is used to represent a while loop in the AST"""
     def __init__(self, condition_node, body_node, should_return_null):
         self.condition_node = condition_node
         self.body_node = body_node
@@ -107,6 +113,7 @@ class WhileNode:
 
 
 class FuncDefNode:
+    """FuncDefNode class is used to represent a function definition in the AST"""
     def __init__(self, var_name_tok, arg_name_toks, body_node, should_auto_return):
         self.var_name_tok = var_name_tok
         self.arg_name_toks = arg_name_toks
@@ -124,6 +131,7 @@ class FuncDefNode:
 
 
 class CallNode:
+    """CallNode class is used to represent a function call in the AST"""
     def __init__(self, node_to_call, arg_nodes):
         self.node_to_call = node_to_call
         self.arg_nodes = arg_nodes
@@ -137,6 +145,7 @@ class CallNode:
 
 
 class ReturnNode:
+    """ReturnNode class is used to represent a return statement in the AST"""
     def __init__(self, node_to_return, pos_start, pos_end):
         self.node_to_return = node_to_return
 
@@ -145,17 +154,20 @@ class ReturnNode:
 
 
 class ContinueNode:
+    """ContinueNode class is used to represent a continue statement in the AST"""
     def __init__(self, pos_start, pos_end):
         self.pos_start = pos_start
         self.pos_end = pos_end
 
 
 class BreakNode:
+    """BreakNode class is used to represent a break statement in the AST"""
     def __init__(self, pos_start, pos_end):
         self.pos_start = pos_start
         self.pos_end = pos_end
 
 class ParseResult:
+    """ParseResult class is used to represent the result of parsing"""
     def __init__(self):
         self.error = None
         self.node = None

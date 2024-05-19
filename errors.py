@@ -47,6 +47,7 @@ class RTError(Error):
         return 'Traceback (most recent call last):\n' + result
 
 def string_with_arrows(text, pos_start, pos_end):
+    """Generate string with arrows pointing to a specific position in the text"""
     result = ''
 
     # Calculate indices

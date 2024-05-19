@@ -67,7 +67,7 @@ class RTResult:
                 self.loop_should_break
         )
 
-Number.null = Number("-------")
+Number.null = Number("")
 Boolean.false = Boolean(False)
 Boolean.true = Boolean(True)
 Number.math_PI = Number(math.pi)
@@ -140,11 +140,13 @@ class BaseFunction(Value):
         self.name = name or "<anonymous>"
 
     def generate_new_context(self):
+        """Generate a new context for the function"""
         new_context = Context(self.name, self.context, self.pos_start)
         new_context.symbol_table = SymbolTable(new_context.parent.symbol_table)
         return new_context
 
     def check_args(self, arg_names, args):
+        """Check if the number of arguments is correct"""
         res = RTResult()
 
         if len(args) > len(arg_names):
@@ -164,6 +166,7 @@ class BaseFunction(Value):
         return res.success(None)
 
     def populate_args(self, arg_names, args, exec_ctx):
+        """Populate the arguments in the symbol table"""
         for i in range(len(args)):
             arg_name = arg_names[i]
             arg_value = args[i]
@@ -171,6 +174,7 @@ class BaseFunction(Value):
             exec_ctx.symbol_table.set(arg_name, arg_value)
 
     def check_and_populate_args(self, arg_names, args, exec_ctx):
+        """Check and populate the arguments in the symbol table"""
         res = RTResult()
         res.register(self.check_args(arg_names, args))
         if res.should_return():
@@ -189,6 +193,7 @@ class Function(BaseFunction):
         self.should_auto_return = should_auto_return
 
     def execute(self, args):
+        """Execute the function"""
         res = RTResult()
         interpreter = Interpreter()
         exec_ctx = self.generate_new_context()
@@ -205,6 +210,7 @@ class Function(BaseFunction):
         return res.success(ret_value)
 
     def copy(self):
+        """Copy the function"""
         copy = Function(self.name, self.body_node, self.arg_names, self.should_auto_return)
         copy.set_context(self.context)
         copy.set_pos(self.pos_start, self.pos_end)
@@ -221,6 +227,7 @@ class BuiltInFunction(BaseFunction):
         super().__init__(name)
 
     def execute(self, args):
+        """Execute the built-in function"""
         res = RTResult()
         exec_ctx = self.generate_new_context()
 
@@ -237,29 +244,35 @@ class BuiltInFunction(BaseFunction):
         return res.success(return_value)
 
     def no_visit_method(self, node, context):
+        """Raise an exception if no method is defined"""
         raise Exception(f'No execute_{self.name} method defined')
 
     def copy(self):
+        """Copy the built-in function"""
         copy = BuiltInFunction(self.name)
         copy.set_context(self.context)
         copy.set_pos(self.pos_start, self.pos_end)
         return copy
 
     def __repr__(self):
+        """Return the built-in function as a string"""
         return f"<built-in function {self.name}>"
 
     def execute_print(self, exec_ctx):
+        """Print a value"""
         print(str(exec_ctx.symbol_table.get('value')))
         return RTResult().success(Number.null)
 
     execute_print.arg_names = ['value']
 
     def execute_print_ret(self, exec_ctx):
+        """Print a value and return it as a string"""
         return RTResult().success(String(str(exec_ctx.symbol_table.get('value'))))
 
     execute_print_ret.arg_names = ['value']
 
     def execute_input(self, exec_ctx):
+        """Get input from the user"""
         text = ''
         # Check if a prompt argument is provided
         if "prompt" in exec_ctx.symbol_table.symbols:
@@ -279,6 +292,7 @@ class BuiltInFunction(BaseFunction):
     execute_input.arg_names = ["prompt"]
 
     def execute_input_int(self, exec_ctx):
+        """Get an integer input from the user"""
         text = ''
         # Check if a prompt argument is provided
         if "prompt" in exec_ctx.symbol_table.symbols:
@@ -307,36 +321,42 @@ class BuiltInFunction(BaseFunction):
     execute_input_int.arg_names = ["prompt"]
 
     def execute_clear(self, exec_ctx):
+        """Clear the console"""
         os.system('cls' if os.name == 'nt' else 'cls')
         return RTResult().success(Number.null)
 
     execute_clear.arg_names = []
 
     def execute_is_number(self, exec_ctx):
+        """Check if the value is a number"""
         is_number = isinstance(exec_ctx.symbol_table.get("value"), Number)
         return RTResult().success(Boolean.true if is_number else Boolean.false)
 
     execute_is_number.arg_names = ["value"]
 
     def execute_is_string(self, exec_ctx):
+        """Check if the value is a string"""
         is_number = isinstance(exec_ctx.symbol_table.get("value"), String)
         return RTResult().success(Boolean.true if is_number else Boolean.false)
 
     execute_is_string.arg_names = ["value"]
 
     def execute_is_list(self, exec_ctx):
+        """Check if the value is a list"""
         is_number = isinstance(exec_ctx.symbol_table.get("value"), List)
         return RTResult().success(Boolean.true if is_number else Boolean.false)
 
     execute_is_list.arg_names = ["value"]
 
     def execute_is_function(self, exec_ctx):
+        """Check if the value is a function"""
         is_number = isinstance(exec_ctx.symbol_table.get("value"), BaseFunction)
         return RTResult().success(Boolean.true if is_number else Boolean.false)
 
     execute_is_function.arg_names = ["value"]
 
     def execute_append(self, exec_ctx):
+        """Append a value to a list"""
         list_ = exec_ctx.symbol_table.get("list")
         value = exec_ctx.symbol_table.get("value")
 
@@ -353,6 +373,7 @@ class BuiltInFunction(BaseFunction):
     execute_append.arg_names = ["list", "value"]
 
     def execute_pop(self, exec_ctx):
+        """Pop a value from a list"""
         list_ = exec_ctx.symbol_table.get("list")
         index = exec_ctx.symbol_table.get("index")
 
@@ -383,6 +404,7 @@ class BuiltInFunction(BaseFunction):
     execute_pop.arg_names = ["list", "index"]
 
     def execute_extend(self, exec_ctx):
+        """Extend a list with another list"""
         listA = exec_ctx.symbol_table.get("listA")
         listB = exec_ctx.symbol_table.get("listB")
 
@@ -406,6 +428,7 @@ class BuiltInFunction(BaseFunction):
     execute_extend.arg_names = ["listA", "listB"]
 
     def execute_len(self, exec_ctx):
+        """Get the length of a list"""
         list_ = exec_ctx.symbol_table.get("list")
 
         if not isinstance(list_, List):
@@ -420,6 +443,7 @@ class BuiltInFunction(BaseFunction):
     execute_len.arg_names = ["list"]
 
     def execute_run(self, exec_ctx):
+        """Run a script"""
         fn = exec_ctx.symbol_table.get("fn")
 
         if not isinstance(fn, String):
@@ -482,14 +506,15 @@ class Context:
 
 class Interpreter:
     def visit(self, node, context):
+        """ This function is used to visit the node."""
         method_name = f'visit_{type(node).__name__}'
         method = getattr(self, method_name, self.no_visit_method)
         return method(node, context)
 
     def no_visit_method(self, node, context):
+        """ This function is used to raise an exception if no visit method is defined."""
         raise Exception(f'No visit_{type(node).__name__} method defined')
 
-    ###################################
 
     def visit_NumberNode(self, node, context):
         return RTResult().success(
@@ -515,6 +540,7 @@ class Interpreter:
         )
 
     def visit_VarAccessNode(self, node, context):
+        """ This function is used to access the variable."""
         res = RTResult()
         var_name = node.var_name_tok.value
         value = context.symbol_table.get(var_name)
@@ -530,6 +556,7 @@ class Interpreter:
         return res.success(value)
 
     def visit_VarAssignNode(self, node, context):
+        """ This function is used to assign the variable."""
         res = RTResult()
         var_name = node.var_name_tok.value
         value = res.register(self.visit(node.value_node, context))
@@ -540,6 +567,7 @@ class Interpreter:
         return res.success(value)
 
     def visit_BinOpNode(self, node, context):
+        """ This function is used to perform binary operations."""
         res = RTResult()
         left = res.register(self.visit(node.left_node, context))
         if res.should_return():
@@ -581,6 +609,7 @@ class Interpreter:
             return res.success(result.set_pos(node.pos_start, node.pos_end))
 
     def visit_UnaryOpNode(self, node, context):
+        """ This function is used to perform unary operations."""
         res = RTResult()
         number = res.register(self.visit(node.node, context))
         if res.should_return():
@@ -775,7 +804,6 @@ global_symbol_table.set("RUN", BuiltInFunction.run)
 
 def run(fn, text):
     """ This function is used to run the code."""
-
     # Generate tokens
     lexer = Lexer(fn, text)
     tokens, error = lexer.make_tokens()

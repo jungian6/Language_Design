@@ -1,5 +1,6 @@
 class Position:
     def __init__(self, idx, ln, col, fn, ftxt):
+        """Initialize the position of the character in the file"""
         self.idx = idx
         self.ln = ln
         self.col = col
@@ -7,6 +8,7 @@ class Position:
         self.ftxt = ftxt
 
     def advance(self, current_char=None):
+        """Advance the position pointer"""
         self.idx += 1
         self.col += 1
 
@@ -33,6 +35,7 @@ class Token:
             self.pos_end = pos_end.copy()
 
     def matches(self, type_, value):
+        """Check if the token matches the given type and value"""
         return self.type == type_ and self.value == value
 
     def __repr__(self):

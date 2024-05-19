@@ -1,4 +1,6 @@
-HOW TO BUILD THE PROJECT:
-
-1. Install PyCharm IDE on your machine.
-2. Make sure you have Python 3.11 installed on your machine.
+How to Build this project
+-------------------------
+1. Install PyCharm Professional
+2. Open this directory in PyCharm
+3. Set up a local Python interpreter in PyCharm (This code is tested and developed using Python 3.11)
+4. Run shell.py and follow the README.txt for instructions on how to use the language

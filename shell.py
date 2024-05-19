@@ -1,7 +1,7 @@
 import main
 
 while True:
-    text = input("calc> ")
+    text = input(">>> ")
     if text.strip() == "": continue
     result, error = main.run('<stdin>', text)
 

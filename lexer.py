@@ -6,6 +6,7 @@ from errors import RTError
 
 
 class Lexer:
+
     def __init__(self, fn, text):
         self.fn = fn
         self.text = text
@@ -14,10 +15,12 @@ class Lexer:
         self.advance()
 
     def advance(self):
+        """Advance the position pointer"""
         self.pos.advance(self.current_char)
         self.current_char = self.text[self.pos.idx] if self.pos.idx < len(self.text) else None
 
     def make_tokens(self):
+        """Convert the text into tokens"""
         tokens = []
 
         while self.current_char is not None:
@@ -84,6 +87,7 @@ class Lexer:
         return tokens, None
 
     def make_number(self):
+        """Make a number token from the current character in the text"""
         num_str = ''
         dot_count = 0
         pos_start = self.pos.copy()

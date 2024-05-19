@@ -319,6 +319,7 @@ class Parser:
         ))
 
     def list_expr(self):
+        """Parses a list expression"""
         res = ParseResult()
         element_nodes = []
         pos_start = self.current_tok.pos_start.copy()
@@ -379,6 +380,7 @@ class Parser:
         return self.if_expr_cases('ELIF')
 
     def if_expr_c(self):
+        """Parses the else case of an if expression"""
         res = ParseResult()
         else_case = None
 
@@ -412,6 +414,7 @@ class Parser:
         return res.success(else_case)
 
     def if_expr_b_or_c(self):
+        """Parses the elif or else case of an if expression"""
         res = ParseResult()
         cases, else_case = [], None
 
@@ -428,6 +431,7 @@ class Parser:
         return res.success((cases, else_case))
 
     def if_expr_cases(self, case_keyword):
+        """Parses the cases of an if expression"""
         res = ParseResult()
         cases = []
         else_case = None
@@ -487,6 +491,7 @@ class Parser:
         return res.success((cases, else_case))
 
     def for_expr(self):
+        """Parses a for expression"""
         res = ParseResult()
 
         if not self.current_tok.matches(TT_KEYWORD, 'FOR'):
@@ -740,6 +745,7 @@ class Parser:
         ))
 
     def bin_op(self, func_a, ops, func_b=None):
+        """Performs binary operations"""
         if func_b is None:
             func_b = func_a
 
