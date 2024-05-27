@@ -1,0 +1,7 @@
+VAR quickMaths = 10;
+VAR quickMaths = quickMaths + 2;
+PRINT(quickMaths);
+
+VAR floatTest = 1.0;
+VAR floatTest = floatTest + 5;
+PRINT(floatTest);

@@ -1,0 +1,18 @@
+# Function to calculate the factorial of a number
+FUN factorial(n)
+    IF n <= 1 THEN
+        RETURN 1;
+    ELSE
+        RETURN n * factorial(n - 1);
+    END
+END
+
+# Main program
+VAR num = INPUT_INT("Enter a non-negative number: ");
+
+IF num >= 0 THEN
+    VAR result = factorial(num);
+    PRINT("Factorial of " + num + " is: " + result);
+ELSE
+    PRINT("Invalid input. Please enter a non-negative number.");
+END

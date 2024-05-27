@@ -36,7 +36,6 @@ class Parser:
             ))
         return res
 
-    ###################################
 
     def statements(self):
         """Parses a list of statements"""

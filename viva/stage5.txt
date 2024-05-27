@@ -1,0 +1,18 @@
+VAR is_running = TRUE;
+VAR shopping_list = "";
+
+WHILE is_running THEN
+    VAR item = INPUT("Add an item to the shopping list: ");
+
+    IF item == "" THEN
+        VAR is_running = FALSE;
+    ELSE
+        IF shopping_list == "" THEN
+            VAR shopping_list = item;
+        ELSE
+            VAR shopping_list = shopping_list + ", " + item;
+        END
+    END
+END
+
+PRINT(shopping_list);

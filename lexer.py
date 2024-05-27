@@ -1,8 +1,7 @@
 from constants import *
 from errors import ExpectedCharError, IllegalCharError
 from tokens import Position, Token
-from values import Value
-from errors import RTError
+
 
 
 class Lexer:
@@ -153,6 +152,7 @@ class Lexer:
         return Token(tok_type, pos_start=pos_start, pos_end=self.pos)
 
     def make_not_equals(self):
+        """Make a not equals token from the current character in the text"""
         pos_start = self.pos.copy()
         self.advance()
 
@@ -164,6 +164,7 @@ class Lexer:
         return None, ExpectedCharError(pos_start, self.pos, "'=' (after '!')")
 
     def make_equals(self):
+        """Make an equals token from the current character in the text"""
         tok_type = TT_EQ
         pos_start = self.pos.copy()
         self.advance()
@@ -175,6 +176,7 @@ class Lexer:
         return Token(tok_type, pos_start=pos_start, pos_end=self.pos)
 
     def make_less_than(self):
+        """Make a less than token from the current character in the text"""
         tok_type = TT_LT
         pos_start = self.pos.copy()
         self.advance()
@@ -186,6 +188,7 @@ class Lexer:
         return Token(tok_type, pos_start=pos_start, pos_end=self.pos)
 
     def make_greater_than(self):
+        """Make a greater than token from the current character in the text"""
         tok_type = TT_GT
         pos_start = self.pos.copy()
         self.advance()
@@ -197,6 +200,7 @@ class Lexer:
         return Token(tok_type, pos_start=pos_start, pos_end=self.pos)
 
     def skip_comment(self):
+        """Skip the comment in the text"""
         self.advance()
 
         while self.current_char != '\n':

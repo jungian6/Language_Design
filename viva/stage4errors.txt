@@ -1,0 +1,3 @@
+VAR stringCatTest = "10 cats"
+VAR stringDogTest = stringCatTest + 5 + " more cats"
+PRINT(stringCatTest)

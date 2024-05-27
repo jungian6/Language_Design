@@ -68,8 +68,8 @@ class RTResult:
         )
 
 Number.null = Number("")
-Boolean.false = Boolean(False)
-Boolean.true = Boolean(True)
+Number.false = Number(0)
+Number.true = Number(1)
 Number.math_PI = Number(math.pi)
 
 
@@ -84,8 +84,6 @@ class String(Value):
         if isinstance(other, String):
             return String(self.value + other.value).set_context(self.context), None
         elif isinstance(other, Number):
-            return String(self.value + str(other.value)).set_context(self.context), None
-        elif isinstance(other, Boolean):
             return String(self.value + str(other.value)).set_context(self.context), None
         elif isinstance(other, List):
             list_str = ", ".join([str(element) for element in other.elements])
@@ -330,28 +328,28 @@ class BuiltInFunction(BaseFunction):
     def execute_is_number(self, exec_ctx):
         """Check if the value is a number"""
         is_number = isinstance(exec_ctx.symbol_table.get("value"), Number)
-        return RTResult().success(Boolean.true if is_number else Boolean.false)
+        return RTResult().success(Number.true if is_number else Number.false)
 
     execute_is_number.arg_names = ["value"]
 
     def execute_is_string(self, exec_ctx):
         """Check if the value is a string"""
         is_number = isinstance(exec_ctx.symbol_table.get("value"), String)
-        return RTResult().success(Boolean.true if is_number else Boolean.false)
+        return RTResult().success(Number.true if is_number else Number.false)
 
     execute_is_string.arg_names = ["value"]
 
     def execute_is_list(self, exec_ctx):
         """Check if the value is a list"""
         is_number = isinstance(exec_ctx.symbol_table.get("value"), List)
-        return RTResult().success(Boolean.true if is_number else Boolean.false)
+        return RTResult().success(Number.true if is_number else Number.false)
 
     execute_is_list.arg_names = ["value"]
 
     def execute_is_function(self, exec_ctx):
         """Check if the value is a function"""
         is_number = isinstance(exec_ctx.symbol_table.get("value"), BaseFunction)
-        return RTResult().success(Boolean.true if is_number else Boolean.false)
+        return RTResult().success(Number.true if is_number else Number.false)
 
     execute_is_function.arg_names = ["value"]
 
@@ -782,8 +780,8 @@ class Interpreter:
 
 global_symbol_table = SymbolTable()
 global_symbol_table.set("NULL", Number.null)
-global_symbol_table.set("FALSE", Boolean.false)
-global_symbol_table.set("TRUE", Boolean.true)
+global_symbol_table.set("FALSE", Number.false)
+global_symbol_table.set("TRUE", Number.true)
 global_symbol_table.set("MATH_PI", Number.math_PI)
 global_symbol_table.set("PRINT", BuiltInFunction.print)
 global_symbol_table.set("PRINT_RET", BuiltInFunction.print_ret)
