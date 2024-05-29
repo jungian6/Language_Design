@@ -20,7 +20,7 @@ PRINT "Hello World"
 VAR a = 5
 VAR b = 10
 VAR c = a + b
-PRINT c
+PRINT(c)
 
 
 Example Shell Commands
