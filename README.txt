@@ -1,4 +1,4 @@
-The following Repo got me 100% in my Language Design Assignment :)
+The following Repo got me 100% on my Language Design Assignment :)
 
 How to use this language
 -----------------------
